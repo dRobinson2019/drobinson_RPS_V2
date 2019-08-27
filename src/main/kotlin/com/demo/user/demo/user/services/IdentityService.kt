@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class IdentityService {
-    data class UUID(val id: String)
+    data class Identity(val id: String, val username: String)
 
-    fun uuid(id: String) = UUID(id)
+    fun identity(id: String, username: String) = Identity(id, username)
 }
