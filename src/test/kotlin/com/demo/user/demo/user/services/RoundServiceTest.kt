@@ -4,13 +4,12 @@ import org.junit.Assert
 import org.junit.Test
 import com.demo.user.demo.user.models.Round
 
-
 class RoundServiceTest constructor() {
 
     @Test
     fun draw() {
-        val message = "Draw!"
-        Assert.assertEquals(MessageService.Message("Draw!"), MessageService.Message(message))
+        val message = "Draw. Play again!"
+        Assert.assertEquals(MessageService.Message("Draw. Play again!"), MessageService.Message(message))
     }
 
     @Test
@@ -27,7 +26,5 @@ class RoundServiceTest constructor() {
         val roundService = RoundService()
         val outcome: String = roundService.getWinner(game)
         Assert.assertEquals(MessageService.Message("Invalid entry!"), MessageService.Message(outcome))
-
-
     }
 }

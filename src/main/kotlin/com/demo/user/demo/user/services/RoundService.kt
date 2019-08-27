@@ -28,7 +28,7 @@ class RoundService {
             return "Invalid entry!"
         }
         if (draw(round)) {
-            return "Draw!"
+            return "Draw. Play again!"
         }
 
         if (playerOneWins(round)) {
