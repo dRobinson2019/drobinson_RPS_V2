@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*
 import java.util.*
 import javax.annotation.security.RolesAllowed
 import javax.validation.Valid
+import javax.validation.ValidationException
 
 @RestController
 @RequestMapping("/api")
@@ -25,12 +26,6 @@ class ApiController @Autowired constructor(private val roundService: RoundServic
         return IdentityService.Identity(uuid, username)
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @RolesAllowed("ADMIN")
-    @GetMapping("/getBoard")
-    fun getBoard(): MutableIterable<Round> {
-        return roundRepository.findAll()
-    }
 
     @GetMapping("getHistory")
     fun getHistory(): MutableIterable<Round> {
@@ -39,16 +34,24 @@ class ApiController @Autowired constructor(private val roundService: RoundServic
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PostMapping
+    @PostMapping(consumes= ["application/json", "application/x-www-form-urlencoded"])
     @ResponseBody
-    fun submit (@Valid @RequestBody  round: Round, errors: Errors) {
+    fun submit (@Valid @RequestBody  round: Round, errors: Errors): String {
         try {
+                println("WHAT is ROUND: $round")
             if (!errors.hasErrors()) {
-                val winner = roundService.getWinner(round)
+                return roundService.getWinner(round)
             }
+        } catch (err: Throwable) {
+            throw ValidationException("Errors: $err")
         }
+        throw ValidationException("Errors: $errors")
     }
-
-
+    @PreAuthorize("hasRole('ADMIN')")
+    @RolesAllowed("ADMIN")
+    @GetMapping("/getBoard")
+    fun getBoard(): MutableIterable<Round> {
+        return roundRepository.findAll()
+    }
 
 }

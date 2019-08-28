@@ -1,11 +1,20 @@
+import { Game } from '../types/GameFormTypes'
+
 export function Rounds() {
-    let rounds = []
+    let rounds: Game[] = []
 
-    this.isEmpty = () => !rounds.length
+    const isEmpty = (): boolean => !rounds.length
 
-    this.limitReached = (roundLimit) => rounds.length === roundLimit
+    const limitReached = (roundLimit: number): boolean => rounds.length === roundLimit
     
-    this.save = (round) => rounds.push(round)
+    const save = (round: Game) => rounds.push(round)
 
-    this.all = () => rounds
+    const all = () => rounds
+
+    return {
+        isEmpty,
+        limitReached,
+        save,
+        all
+    }
 }

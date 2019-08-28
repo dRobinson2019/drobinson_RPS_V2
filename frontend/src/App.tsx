@@ -5,7 +5,7 @@ import './App.css'
 const App: React.FC = () => {
   return (
     <div className="container">
-        <GameForm />
+        <GameForm {...{uuid: 2 || null}} />
     </div>
   )
 }

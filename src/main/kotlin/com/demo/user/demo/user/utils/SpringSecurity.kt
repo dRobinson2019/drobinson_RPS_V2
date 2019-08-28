@@ -22,37 +22,38 @@ class SpringSecurityConfig : WebSecurityConfigurerAdapter() {
                 .withUser("admin").password("{noop}admin").roles("USER", "ADMIN")
     }
 
-    @Throws(Exception::class)
-    override fun configure(http: HttpSecurity) {
-        http
-                .authorizeRequests()
-                .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/game/board").hasRole("ADMIN")
-                .antMatchers("/game/getboard").hasRole("ADMIN")
-                .antMatchers("/anonymous*").anonymous()
-                .antMatchers("/login*").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .formLogin()
-                .and()
-                .csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .and()
-                .logout()
-                .logoutUrl("/logout")
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID")
-    }
+    // @Throws(Exception::class)
+    // override fun configure(http: HttpSecurity) {
+    //     http
+    //             .authorizeRequests()
+    //             .antMatchers("/admin/**").hasRole("ADMIN")
+    //             .antMatchers("/game/board").hasRole("ADMIN")
+    //             .antMatchers("/game/getboard").hasRole("ADMIN")
+    //             .antMatchers("/anonymous*").anonymous()
+    //             .antMatchers("/login*").permitAll()
+    //             .antMatchers("/api*").permitAll()
+    //             .anyRequest().authenticated()
+    //             .and()
+    //             .formLogin()
+    //             .and()
+    //             .csrf()
+    //             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+    //             .and()
+    //             .logout()
+    //             .logoutUrl("/logout")
+    //             .invalidateHttpSession(true)
+    //             .deleteCookies("JSESSIONID")
+    // }
 
 
-//    @Throws(Exception::class)
-//    override fun configure(http: HttpSecurity) {
-//        http.authorizeRequests()
-//                .antMatchers("/").permitAll()
-//                .antMatchers("/h2_console/**").permitAll()
-//
-//        http.csrf().disable()
-//        http.headers().frameOptions().disable()
-//    }
+   @Throws(Exception::class)
+   override fun configure(http: HttpSecurity) {
+       http.authorizeRequests()
+               .antMatchers("/").permitAll()
+               .antMatchers("/h2_console/**").permitAll()
+
+       http.csrf().disable()
+       http.headers().frameOptions().disable()
+   }
 
 }
