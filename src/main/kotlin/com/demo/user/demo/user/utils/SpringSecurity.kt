@@ -14,7 +14,7 @@ class SpringSecurityConfig : WebSecurityConfigurerAdapter() {
 
     @Autowired
     @Throws(Exception::class)
-    protected override fun configure(auth: AuthenticationManagerBuilder) {
+     override fun configure(auth: AuthenticationManagerBuilder) {
 
         auth.inMemoryAuthentication()
                 .withUser("user").password("{noop}user").roles("USER")
@@ -51,7 +51,6 @@ class SpringSecurityConfig : WebSecurityConfigurerAdapter() {
        http.authorizeRequests()
                .antMatchers("/").permitAll()
                .antMatchers("/h2_console/**").permitAll()
-
        http.csrf().disable()
        http.headers().frameOptions().disable()
    }

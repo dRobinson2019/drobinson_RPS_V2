@@ -15,18 +15,13 @@ class RoundService {
         return !choices.contains(choice.toLowerCase())
     }
 
-    private fun playerOneWins(round: Round): Boolean {
-        val (playerOne, playerTwo) = round
-        return playerOne == "rock" && playerTwo == "scissors" || playerOne == "scissors" && playerTwo == "paper" ||  playerOne == "paper" && playerTwo == "rock"
-    }
-
-
     fun getWinner(round: Round): String {
         val (playerOne, playerTwo) = round
-        lateinit var message: String
+
         if (invalid(playerOne) || invalid(playerTwo)) {
             return "Invalid entry!"
         }
+
         if (draw(round)) {
             return "Draw. Play again!"
         }
@@ -38,5 +33,9 @@ class RoundService {
         }
     }
 
+    private fun playerOneWins(round: Round): Boolean {
+        val (playerOne, playerTwo) = round
+        return playerOne == "rock" && playerTwo == "scissors" || playerOne == "scissors" && playerTwo == "paper" ||  playerOne == "paper" && playerTwo == "rock"
+    }
 
 }

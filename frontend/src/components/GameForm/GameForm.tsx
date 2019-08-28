@@ -25,18 +25,21 @@ const GameForm = ({ uuid }: {uuid: number}) => {
     const handleSetState = (originalObject: Object, updatedObject: Partial<InitialState>) => setState(mergeState(originalObject, updatedObject))
     const handleChange = (e: any) => handleSetState(state, {[e.target.name]: e.target.value})
     const invalid = () => handleSetState(state, {message: "Invalid choice!"})
-    const isInvalid = (choice: string) => { console.log(choice); return ["rock","paper","scissors"].includes(choice)}
+    const isInvalid = (choice: string) => !["rock","paper","scissors"].includes(choice)
     const tie = () => handleSetState(state, {message: "Draw. Play again!"})
     const isTie = () => state.playerOneChoice === state.playerTwoChoice
     const handleServerMessage = (message: string) => handleSetState(state, {message: message })
 
-    const handleSubmit = (e: any) => {
+    const handleSubmit = async (e: any) => {
         e.preventDefault()
         const Game = {
             playerOne: state.playerOneChoice,
             playerTwo: state.playerTwoChoice,
-            matchId: state.uuid
+            matchId: 12,
+            timestamp: Date.now()
         }
+
+        console.log('Game: ', Game)
         if(isInvalid(state.playerOneChoice) || isInvalid(state.playerTwoChoice)) {
             invalid()
         }
@@ -44,39 +47,19 @@ const GameForm = ({ uuid }: {uuid: number}) => {
             tie()
         }
         // @ts-ignore
-        fetch("/api", {
-            method: "POST",
-            credentials: "same-origin",
+        await fetch("/api/", {
+            method: 'POST',
+            credentials: 'same-origin',
             headers: {
-                "Content-Type": "application/json",
-                "X-XSRF-TOKEN": state.csrfToken,
+                'Content-Type': 'application/json',
+                'X-XSRF-TOKEN': state.csrfToken,
             },
-            referrer: "no-referrer",
+            referrer: 'no-referrer',
             body: JSON.stringify(Game)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             }).then((result: any) => result.json()).then((result: any) => {
             if (result) {
+                console.log("RESULT success: ", result)
+                alert(JSON.stringify(result))
                 handleServerMessage(result.message)
             } else {
                 setState(mergeState(state, { error: result.message }))

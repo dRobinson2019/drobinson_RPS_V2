@@ -27,6 +27,6 @@ data class Round(
         val id: Long = -1
 ) {
     override fun toString(): String{
-        return "Round[id=$id, playerOne=$playerOne, playerTwo=$playerTwo]"
+        return "Round[id=$id, playerOne=$playerOne, playerTwo=$playerTwo, matchId=$matchId, timestamp=$timestamp, username=$username]"
     }
 }
