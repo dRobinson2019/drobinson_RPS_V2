@@ -9,7 +9,7 @@ import java.io.IOException
 @RestController
 class RouteController @Autowired constructor(){
 
-    @RequestMapping("/*")
+    @RequestMapping("/game/*")
     @Throws(IOException::class)
     fun notFound(): RedirectView {
         return RedirectView("/")
