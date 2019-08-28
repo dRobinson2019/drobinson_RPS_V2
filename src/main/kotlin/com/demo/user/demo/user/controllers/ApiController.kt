@@ -5,6 +5,7 @@ import com.demo.user.demo.user.repositories.RoundRepository
 import com.demo.user.demo.user.services.IdentityService
 import com.demo.user.demo.user.services.MessageService
 import com.demo.user.demo.user.services.RoundService
+import com.demo.user.demo.user.utils.GameDetails
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
@@ -22,7 +23,7 @@ import javax.validation.ValidationException
 @RequestMapping("/api")
 @Validated
 class ApiController @Autowired constructor(private val roundService: RoundService, private val roundRepository: RoundRepository) {
-
+    val gameDetails = GameDetails(roundCount= 1)
     @GetMapping("/startMatch")
     fun startGame(): IdentityService.Identity {
         val uuid = UUID.randomUUID().toString()
@@ -40,9 +41,16 @@ class ApiController @Autowired constructor(private val roundService: RoundServic
     @PostMapping(value="/", consumes= ["application/json", "application/x-www-form-urlencoded"])
     @ResponseBody
     fun submit (@Valid @RequestBody round: Round, errors: Errors): MessageService.Message {
+        gameDetails.incrementRoundCount()
         try {
             if (!errors.hasErrors()) {
-                return MessageService.Message(roundService.getWinner(round))
+                val winner = roundService.getWinner(round)
+                roundRepository.save(round)
+                if (!gameDetails.addToRoundOutcomes(winner)) {
+                    gameDetails.resetDetails()
+                    return MessageService.Message(winner, true)
+                }
+                return MessageService.Message(winner)
             }
         } catch (err: Throwable) {
             throw ValidationException("Errors throws: $err")

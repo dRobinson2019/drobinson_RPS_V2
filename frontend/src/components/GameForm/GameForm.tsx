@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { InitialState, Game, Choices } from '../../types/GameFormTypes'
+import { InitialState, Game, Choices, UUID } from '../../types/GameFormTypes'
 import { mergeState, getCookie } from '../../utils/Utility';
 
-const GameForm = ({ uuid }: {uuid: number}) => {
+const GameForm = ({ uuid }: UUID) => {
     const initialState: InitialState = {
         message: "",
         playerOneChoice: "",
@@ -15,13 +15,21 @@ const GameForm = ({ uuid }: {uuid: number}) => {
     }
 
     const [state, setState] = useState(initialState)
-
+    const [history, setHistory] = useState({
+        round1: null,
+        round2: null,
+        round3: null,
+        winner: false
+    })
     useEffect(() => {
         const  token = getCookie('XSRF-TOKEN')
         setState(mergeState(state, {csrfToken:  token }))
         setState(mergeState(state, {uuid: getCookie('UUID') }))
 
     }, [state.uuid])
+    useEffect(() => {
+
+    }, [history])
     const handleSetState = (originalObject: Object, updatedObject: Partial<InitialState>) => setState(mergeState(originalObject, updatedObject))
     const handleChange = (e: any) => handleSetState(state, {[e.target.name]: e.target.value})
     const invalid = () => handleSetState(state, {message: "Invalid choice!"})
@@ -39,7 +47,6 @@ const GameForm = ({ uuid }: {uuid: number}) => {
             timestamp: Date.now()
         }
 
-        console.log('Game: ', Game)
         if(isInvalid(state.playerOneChoice) || isInvalid(state.playerTwoChoice)) {
             invalid()
         }
@@ -58,8 +65,6 @@ const GameForm = ({ uuid }: {uuid: number}) => {
             body: JSON.stringify(Game)
             }).then((result: any) => result.json()).then((result: any) => {
             if (result) {
-                console.log("RESULT success: ", result)
-                alert(JSON.stringify(result))
                 handleServerMessage(result.message)
             } else {
                 setState(mergeState(state, { error: result.message }))
@@ -70,8 +75,7 @@ const GameForm = ({ uuid }: {uuid: number}) => {
     return (
         <div className="gameFormContainer">
             { state.message && <div className={"message"}>{state.message}</div> }
-            <form id="gameForm"
-            >
+            <form id="gameForm">
                 <input name="playerOneChoice" placeholder={"Player 1 Choice"} value={state.playerOneChoice} onChange={handleChange} required/>
                 <input name="playerTwoChoice" placeholder={"Player 2 Choice"} value={state.playerTwoChoice} onChange={handleChange} required/>
                 <button onClick={handleSubmit}>PLAY</button>

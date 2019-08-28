@@ -15,3 +15,5 @@ export type Game = {
 }
 
 export type Choices = 'rock' | 'paper' | 'scissors'
+
+export type UUID = { uuid: number }
