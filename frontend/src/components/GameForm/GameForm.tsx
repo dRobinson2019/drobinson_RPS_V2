@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { InitialState, Game, Choices, UUID } from '../../types/GameFormTypes'
+import {handleSetHistoryProps, InitialState, UUID} from '../../types/GameFormTypes'
 import { mergeState, getCookie } from '../../utils/Utility';
+import './GameForm.css'
+import {Rounds} from "../Rounds/Rounds";
 
-const GameForm = ({ uuid }: UUID) => {
+const GameForm = () => {
     const initialState: InitialState = {
         message: "",
         playerOneChoice: "",
@@ -10,8 +12,8 @@ const GameForm = ({ uuid }: UUID) => {
         playerOneName: "",
         playerTwoName: "",
         csrfToken: "",
-        uuid: uuid
-        
+        uuid: "",
+        roundCount: 1
     }
 
     const [state, setState] = useState(initialState)
@@ -19,31 +21,47 @@ const GameForm = ({ uuid }: UUID) => {
         round1: null,
         round2: null,
         round3: null,
-        winner: false
+        winner: ''
     })
+
     useEffect(() => {
         const  token = getCookie('XSRF-TOKEN')
+        handleSetState(state, {csrfToken:  token })
+        handleSetState(state, {uuid: getCookie('UUID') })
         setState(mergeState(state, {csrfToken:  token }))
         setState(mergeState(state, {uuid: getCookie('UUID') }))
-
     }, [state.uuid])
     useEffect(() => {
 
     }, [history])
+
     const handleSetState = (originalObject: Object, updatedObject: Partial<InitialState>) => setState(mergeState(originalObject, updatedObject))
     const handleChange = (e: any) => handleSetState(state, {[e.target.name]: e.target.value})
+    const handleSetHistory: handleSetHistoryProps = (message, winner)  => {
+        if (state.roundCount === 3) {
+            handleSetState(state, { roundCount: 1 })
+        }  else {
+            const round: string = `round${state.roundCount}`
+            setHistory({ ...history, [`${round}`]: message, winner: winner ? message : ''})
+            handleSetState(state, { roundCount: state.roundCount + 1})
+            console.log('History: ', history)
+            console.log('Round: ', round)
+            console.log('Count: ', state)
+        }
+
+    }
+
     const invalid = () => handleSetState(state, {message: "Invalid choice!"})
     const isInvalid = (choice: string) => !["rock","paper","scissors"].includes(choice)
     const tie = () => handleSetState(state, {message: "Draw. Play again!"})
     const isTie = () => state.playerOneChoice === state.playerTwoChoice
-    const handleServerMessage = (message: string) => handleSetState(state, {message: message })
 
     const handleSubmit = async (e: any) => {
         e.preventDefault()
         const Game = {
             playerOne: state.playerOneChoice,
             playerTwo: state.playerTwoChoice,
-            matchId: 12,
+            matchId: 12, //temporary
             timestamp: Date.now()
         }
 
@@ -65,7 +83,7 @@ const GameForm = ({ uuid }: UUID) => {
             body: JSON.stringify(Game)
             }).then((result: any) => result.json()).then((result: any) => {
             if (result) {
-                handleServerMessage(result.message)
+                handleSetHistory(result.message, result.winner)
             } else {
                 setState(mergeState(state, { error: result.message }))
             }
@@ -74,11 +92,20 @@ const GameForm = ({ uuid }: UUID) => {
 
     return (
         <div className="gameFormContainer">
-            { state.message && <div className={"message"}>{state.message}</div> }
+            { state.message && <div className={"message active"}>{state.message}</div> }
+            <Rounds {...{history}} />
             <form id="gameForm">
-                <input name="playerOneChoice" placeholder={"Player 1 Choice"} value={state.playerOneChoice} onChange={handleChange} required/>
-                <input name="playerTwoChoice" placeholder={"Player 2 Choice"} value={state.playerTwoChoice} onChange={handleChange} required/>
-                <button onClick={handleSubmit}>PLAY</button>
+                <div className="form-group">
+                    <label htmlFor="">Player One</label>
+                    <input name="playerOneChoice" placeholder={"Player 1 Choice"} value={state.playerOneChoice} onChange={handleChange} required/>
+                </div>
+                <div className="form-group">
+                    <label htmlFor="">Player Two</label>
+                    <input name="playerTwoChoice" placeholder={"Player 2 Choice"} value={state.playerTwoChoice} onChange={handleChange} required/>
+                </div>
+                <div className="form-group">
+                    <button onClick={handleSubmit}>PLAY</button>
+                </div>
             </form>
         </div>
     )

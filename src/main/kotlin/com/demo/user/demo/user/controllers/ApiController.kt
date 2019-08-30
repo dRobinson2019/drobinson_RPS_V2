@@ -1,6 +1,8 @@
 package com.demo.user.demo.user.controllers
 
+import com.demo.user.demo.user.models.Match
 import com.demo.user.demo.user.models.Round
+import com.demo.user.demo.user.repositories.MatchRepository
 import com.demo.user.demo.user.repositories.RoundRepository
 import com.demo.user.demo.user.services.IdentityService
 import com.demo.user.demo.user.services.MessageService
@@ -22,7 +24,7 @@ import javax.validation.ValidationException
 @CrossOrigin("http://localhost:3000")
 @RequestMapping("/api")
 @Validated
-class ApiController @Autowired constructor(private val roundService: RoundService, private val roundRepository: RoundRepository) {
+class ApiController @Autowired constructor(private val roundService: RoundService, private val roundRepository: RoundRepository, private val matchRepository: MatchRepository) {
     val gameDetails = GameDetails(roundCount= 1)
     @GetMapping("/startMatch")
     fun startGame(): IdentityService.Identity {
@@ -31,7 +33,7 @@ class ApiController @Autowired constructor(private val roundService: RoundServic
         return IdentityService.Identity(uuid, username)
     }
 
-    @GetMapping("getHistory")
+    @GetMapping("/getHistory")
     fun getHistory(): MutableIterable<Round> {
         val username: String = SecurityContextHolder.getContext().authentication.principal.toString()
         return  roundRepository.findByUsername(username)
@@ -42,11 +44,18 @@ class ApiController @Autowired constructor(private val roundService: RoundServic
     @ResponseBody
     fun submit (@Valid @RequestBody round: Round, errors: Errors): MessageService.Message {
         gameDetails.incrementRoundCount()
+        val current = round.timestamp
+        println("Current Date and Time is: $current")
         try {
             if (!errors.hasErrors()) {
                 val winner = roundService.getWinner(round)
                 roundRepository.save(round)
                 if (!gameDetails.addToRoundOutcomes(winner)) {
+                    var match = Match()
+                    match.timestamp = round.timestamp
+                    match.winner = winner
+                    match.username = SecurityContextHolder.getContext().authentication.principal.toString()
+                    matchRepository.save(match)
                     gameDetails.resetDetails()
                     return MessageService.Message(winner, true)
                 }

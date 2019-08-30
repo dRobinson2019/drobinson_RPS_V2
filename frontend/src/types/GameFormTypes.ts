@@ -5,7 +5,8 @@ export type InitialState = {
     playerOneName: string
     playerTwoName: string
     csrfToken: string
-    uuid: number | null
+    uuid: string | null
+    roundCount: number
 }
 
 export type Game = {
@@ -17,3 +18,5 @@ export type Game = {
 export type Choices = 'rock' | 'paper' | 'scissors'
 
 export type UUID = { uuid: number }
+
+export type handleSetHistoryProps = (message: string, winner: boolean) => void

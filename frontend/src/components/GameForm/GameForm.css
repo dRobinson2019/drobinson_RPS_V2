@@ -1,4 +1,21 @@
-.gameForm {
-    display: flex;
+.gameFormContainer {
+    justify-self: center;
+}
+#gameForm {
+    display: grid;
+    gap: 10px;
+}
+.message {
+    position: relative;
+    bottom: 2em;
+    font-size: 1.5em;
+}
+.active {
+    color: red;
+}
+
+.form-group {
+    margin: 0.925em 0;
+    display: grid;
     gap: 10px;
 }
