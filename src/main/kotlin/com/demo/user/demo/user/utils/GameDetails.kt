@@ -4,9 +4,6 @@ data class GameDetails(var roundCount: Long, val roundOutcomes: HashSet<String> 
     fun incrementRoundCount() {
        roundCount++
     }
-    fun roundLimitReached(limitNumber: Long): Boolean {
-        return limitNumber == roundCount
-    }
 
     fun addToRoundOutcomes(info: String): Boolean {
         if(!roundOutcomes.add(info)) {

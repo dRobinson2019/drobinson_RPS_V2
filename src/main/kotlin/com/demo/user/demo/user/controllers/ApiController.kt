@@ -17,6 +17,8 @@ import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import java.util.*
 import javax.annotation.security.RolesAllowed
+import javax.servlet.http.Cookie
+import javax.servlet.http.HttpServletResponse
 import javax.validation.Valid
 import javax.validation.ValidationException
 
@@ -27,8 +29,9 @@ import javax.validation.ValidationException
 class ApiController @Autowired constructor(private val roundService: RoundService, private val roundRepository: RoundRepository, private val matchRepository: MatchRepository) {
     val gameDetails = GameDetails(roundCount= 1)
     @GetMapping("/startMatch")
-    fun startGame(): IdentityService.Identity {
+    fun startGame(response: HttpServletResponse): IdentityService.Identity {
         val uuid = UUID.randomUUID().toString()
+        response.addCookie(Cookie("UUID", uuid))
         val username: String = SecurityContextHolder.getContext().authentication.principal.toString()
         return IdentityService.Identity(uuid, username)
     }

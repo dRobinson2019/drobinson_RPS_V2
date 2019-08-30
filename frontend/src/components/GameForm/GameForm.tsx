@@ -26,15 +26,12 @@ const GameForm = () => {
 
     useEffect(() => {
         const  token = getCookie('XSRF-TOKEN')
+        const uuid = getCookie('UUID')
+        console.log('uuid: ', uuid)
         handleSetState(state, {csrfToken:  token })
-        handleSetState(state, {uuid: getCookie('UUID') })
-        setState(mergeState(state, {csrfToken:  token }))
-        setState(mergeState(state, {uuid: getCookie('UUID') }))
+        handleSetState(state, {uuid: uuid })
     }, [state.uuid])
-    useEffect(() => {
-
-    }, [history])
-
+    
     const handleSetState = (originalObject: Object, updatedObject: Partial<InitialState>) => setState(mergeState(originalObject, updatedObject))
     const handleChange = (e: any) => handleSetState(state, {[e.target.name]: e.target.value})
     const handleSetHistory: handleSetHistoryProps = (message, winner)  => {
@@ -44,11 +41,7 @@ const GameForm = () => {
             const round: string = `round${state.roundCount}`
             setHistory({ ...history, [`${round}`]: message, winner: winner ? message : ''})
             handleSetState(state, { roundCount: state.roundCount + 1})
-            console.log('History: ', history)
-            console.log('Round: ', round)
-            console.log('Count: ', state)
         }
-
     }
 
     const invalid = () => handleSetState(state, {message: "Invalid choice!"})
@@ -61,7 +54,7 @@ const GameForm = () => {
         const Game = {
             playerOne: state.playerOneChoice,
             playerTwo: state.playerTwoChoice,
-            matchId: 12, //temporary
+            matchId: state.uuid, //temporary
             timestamp: Date.now()
         }
 
