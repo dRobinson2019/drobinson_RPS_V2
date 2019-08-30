@@ -1,4 +1,4 @@
-export const getCookie = (cname) =>  {
+export const getCookie = (cname: string) =>  {
   const name = cname + "=";
   const decodedCookie = decodeURIComponent(document.cookie);
   const ca = decodedCookie.split(';');
@@ -14,11 +14,12 @@ export const getCookie = (cname) =>  {
   return "";
 }
 
+// @ts-ignore
 export const mergeState = (initialState, newState) => {
   return ({ ...initialState, ...newState})
 }
 
-export const convertToReadableDate = (timestamp) => {
+export const convertToReadableDate = (timestamp: number ) => {
   const timeInNumbers = Number(timestamp)
   const date = new Date(timeInNumbers)
   return `${date.toDateString()} ${date.toLocaleTimeString()}`
